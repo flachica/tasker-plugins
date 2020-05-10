@@ -1,7 +1,10 @@
-# tasker-plugins
+# Plugins for [Tasker](https://github.com/atareao/tasker)
 
-Plugins for Tasker
+Only for testing purposes
 
-You need copy plugin1 folder to $HOME/.config/tasker/plugins/
+This plugins are based on [pluggy](https://pluggy.readthedocs.io/en/latest/) library. You can find more documentation [here](http://devork.be/talks/pluggy/pluggy.html)
 
-Then, run tasker and go to Preferences -> Plugins and activate it
+
+To use this copy the plugin1 folder of this repository into the directory $HOME/.config/tasker/plugins/
+
+Then, run tasker, go to Preferences -> Plugins and activate it
