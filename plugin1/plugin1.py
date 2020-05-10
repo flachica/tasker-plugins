@@ -1,6 +1,10 @@
 import pluggy
 
-hookimpl = pluggy.HookimplMarker("indicator")
+# Decorator for hook. The function that was decorated with this
+# will be called from de master source if it in Hookspecks availables
+indicatorimpl = pluggy.HookimplMarker("indicator")
+
+# Custom featured needed
 import gi
 
 try:
@@ -13,15 +17,18 @@ except Exception as e:
     print(e)
     exit(-1)
 from gi.repository import Gtk
+
+
 class IndicatorPlugin1(object):
     """A hook implementation namespace.
     """
 
-    @hookimpl
+    @indicatorimpl
     def get_hook_menu(self, ):
-        """Return a Gtk.Menu().
+        """Return a Gtk.MenuItem() array to be showed on App indicator (System tray)
 
-        :return: new Menu Gtk.Menu
+		This method is the only one must be decorated. The others methods is used by this
+        :return: new Menu Gtk.MenuItem
         """
         project_item = Gtk.CheckMenuItem.new_with_label('Testing menu')
         project_item.connect('toggled', self.on_menu_filter_project_toggled)
