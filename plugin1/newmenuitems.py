@@ -6,7 +6,7 @@ indicatorimpl = pluggy.HookimplMarker("indicator")
 
 # Custom featured needed
 import gi
-from hooks import IndicatorSpec
+from src.hooks import IndicatorSpec
 
 try:
     gi.require_version('Gtk', '3.0')

@@ -1,2 +1,3 @@
 # Must import all classes that implements Hooks and you filled
-from .plugin1 import IndicatorPlugin1
+from .newmenuitems import IndicatorPlugin1
+from .tracktime import ListBoxRowTodoPlugin1
