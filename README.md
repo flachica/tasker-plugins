@@ -17,4 +17,12 @@ Only for testing purposes. Add two items at main menu and log clicks.
 
 ## tracking_history
 
-WIP: Plugin to know what time is spent on a daily basis
+Plugin to know what time is spent on a daily basis
+
+## tracking_history
+
+Plugin to know what time is spent on a daily basis
+
+## tracking_additionals_graph
+
+New Menu Item for show where you spend your time
