@@ -9,6 +9,7 @@ try:
     from messenger import Messenger
     import todotxtio
     import time
+    import datetime
 
     messenger = Messenger()
     def searchTodo(todoToSearch):
@@ -18,37 +19,82 @@ try:
             if todo.text == todoToSearch:
                 return todo
 
-    def getTagsAfterChangeState(beforeTags):
+    def getTagsAfterStopIfNeeded(todo):
+        beforeTags = {}
+        if todo:
+            beforeTags = todo.tags
+        started_at = float(beforeTags.get('started_at', 0))
+        newTags = beforeTags
+        if started_at:
+            just_now = time.time()
+            trackHistory(todo, just_now)
+            total_time = float(beforeTags.get('total_time', 0)) + just_now - started_at
+            newTags['started_at'] = '0'
+            newTags['total_time'] = str(total_time)
+        return newTags
+
+    def getTagsAfterChangeState(todo):
+        beforeTags = {}
+        if todo:
+            beforeTags = todo.tags
         started_at = float(beforeTags.get('started_at', 0))
         just_now = time.time()
         newTags = beforeTags
         if started_at:
-            total_time = float(beforeTags.get('total_time', 0)) + time.time() - started_at
+            total_time = float(beforeTags.get('total_time', 0)) + just_now - started_at
+            trackHistory(todo, just_now)
             newTags['started_at'] = '0'
             newTags['total_time'] = str(total_time)
-            # self.hook.after_track_time(
-            #     todo=self.todo,
-            #     before_started_at=started_at,
-            #     after_started_at=0,
-            #     total_time=total_time,
-            #     just_now=just_now
-            # )
         else:
             newTags['started_at'] = str(just_now)
         return newTags
 
+    def trackHistory(todo, just_now):
+        beforeTags = {}
+        if todo:
+            beforeTags = todo.tags
+        started_at = float(beforeTags.get('started_at', 0))
+        conf = Configurator()
+        list_of_history = todotxtio.from_file(conf.todo_histoy)
+        new_todo_history = todotxtio.Todo(text=todo.text)
+        new_todo_history.projects = todo.projects
+        new_todo_history.contexts = todo.contexts
+        new_todo_history.completed = True
+        new_todo_history.tags['started'] = str(started_at)
+        new_todo_history.tags['ended'] = str(just_now)
+        new_todo_history.tags['step_time'] = str(just_now - started_at)
+        new_todo_history.tags['total_time'] = str(float(todo.tags.get('total_time', 0)) + (just_now - started_at))
+        list_of_history.append(new_todo_history)
+        todotxtio.to_file(conf.todo_histoy, list_of_history)
+
     def changeState(todoText):
         todo = searchTodo(todoText)
-        todo.tags = getTagsAfterChangeState(todo.tags)
-        saveTodo(todo)
+        if not todo:
+            creation_date = datetime.datetime.now().strftime('%Y-%m-%d')
+            newTodo = todotxtio.Todo(text=todoText, creation_date=creation_date)
+            newTodo.tags = getTagsAfterChangeState(newTodo)
+            includeTodo(newTodo)
+        else:
+            todo.tags = getTagsAfterChangeState(todo)
+            saveTodo(todo)
         messenger.sendMessage({'type': 'stateChanged', 'todo': todoText})
 
-    def saveTodo(todoToSearch):
+    def includeTodo(todoToAdd):
         conf = Configurator()
         list_of_todos = todotxtio.from_file(conf.todo)
         for i in range(len(list_of_todos)):
-            if list_of_todos[i].text == todoToSearch.text:
-                list_of_todos[i].tags = todoToSearch.tags
+            list_of_todos[i].tags = getTagsAfterStopIfNeeded(list_of_todos[i])
+        list_of_todos.append(todoToAdd)
+        todotxtio.to_file(conf.todo, list_of_todos)
+
+    def saveTodo(todoToChange):
+        conf = Configurator()
+        list_of_todos = todotxtio.from_file(conf.todo)
+        for i in range(len(list_of_todos)):
+            if list_of_todos[i].text == todoToChange.text:
+                list_of_todos[i].tags = todoToChange.tags
+            else:
+                list_of_todos[i].tags = getTagsAfterStopIfNeeded(list_of_todos[i])
         todotxtio.to_file(conf.todo, list_of_todos)
 
     def sendState(todoText):
