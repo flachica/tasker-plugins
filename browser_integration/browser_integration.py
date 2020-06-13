@@ -10,6 +10,7 @@ try:
     import todotxtio
     import time
     import datetime
+    import re
 
     messenger = Messenger()
     def searchTodo(todoToSearch):
@@ -67,17 +68,22 @@ try:
         list_of_history.append(new_todo_history)
         todotxtio.to_file(conf.todo_histoy, list_of_history)
 
-    def changeState(todoText):
-        todo = searchTodo(todoText)
+    def formatTodo(str):
+        return re.sub('\s', '_', str)
+
+    def changeState(payload):
+        todo = searchTodo(payload['todo'])
         if not todo:
             creation_date = datetime.datetime.now().strftime('%Y-%m-%d')
-            newTodo = todotxtio.Todo(text=todoText, creation_date=creation_date)
+            newTodo = todotxtio.Todo(text=payload['todo'], creation_date=creation_date)
+            newTodo.projects = [formatTodo(payload['project']), ]
+            newTodo.contexts = [formatTodo(payload['context']), ]
             newTodo.tags = getTagsAfterChangeState(newTodo)
             includeTodo(newTodo)
         else:
             todo.tags = getTagsAfterChangeState(todo)
             saveTodo(todo)
-        messenger.sendMessage({'type': 'stateChanged', 'todo': todoText})
+        messenger.sendMessage({'type': 'stateChanged', 'todo': payload['todo']})
 
     def includeTodo(todoToAdd):
         conf = Configurator()
@@ -107,16 +113,17 @@ try:
             else:
                 messenger.sendMessage({'type': 'stateGetted', 'todo': todoText, 'state': 'paused'})
 
+    # Main Loop
     while True:
         receivedMessage = messenger.getMessage()
         if receivedMessage:
             dictMessage = json.loads(receivedMessage)
             logging.info('Received: ' + receivedMessage)
-            todoText = dictMessage['payload']['todo']
+            payload = dictMessage['payload']
             if dictMessage['type'] == 'getState':
-                sendState(todoText)
+                sendState(payload['todo'])
             elif dictMessage['type'] == 'changeState':
-                changeState(todoText)
+                changeState(payload)
 
 except Exception as e:
     logging.exception("Uncaught exception")
