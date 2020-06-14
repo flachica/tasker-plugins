@@ -65,22 +65,33 @@ try:
         new_todo_history.tags['ended'] = str(just_now)
         new_todo_history.tags['step_time'] = str(just_now - started_at)
         new_todo_history.tags['total_time'] = str(float(todo.tags.get('total_time', 0)) + (just_now - started_at))
+        desc = formatTodo(todo.tags.get('description'))
+        if desc:
+            new_todo_history.tags['description'] = desc
         list_of_history.append(new_todo_history)
         todotxtio.to_file(conf.todo_histoy, list_of_history)
 
     def formatTodo(str):
-        return re.sub('\s', '_', str)
+        res = str
+        if res:
+            res = re.sub('\s', '_', res)
+        return res
 
     def changeState(payload):
         todo = searchTodo(payload['todo'])
+        desc = formatTodo(payload.get('description'))
         if not todo:
             creation_date = datetime.datetime.now().strftime('%Y-%m-%d')
             newTodo = todotxtio.Todo(text=payload['todo'], creation_date=creation_date)
             newTodo.projects = [formatTodo(payload['project']), ]
             newTodo.contexts = [formatTodo(payload['context']), ]
+            if desc:
+                newTodo.tags['description'] = desc
             newTodo.tags = getTagsAfterChangeState(newTodo)
             includeTodo(newTodo)
         else:
+            if desc:
+                todo.tags['description'] = desc
             todo.tags = getTagsAfterChangeState(todo)
             saveTodo(todo)
         messenger.sendMessage({'type': 'stateChanged', 'todo': payload['todo']})
