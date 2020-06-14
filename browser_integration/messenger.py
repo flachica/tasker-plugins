@@ -31,4 +31,4 @@ class Messenger(object):
         buffer.write(encodedLength)
         buffer.write(encodedContent)
         buffer.flush()
-        logging.info('Message sended: ' + json.dumps(message))
+        logging.debug('Message sended: ' + json.dumps(message))

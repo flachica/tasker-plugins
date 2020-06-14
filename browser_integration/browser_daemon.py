@@ -131,7 +131,7 @@ try:
         receivedMessage = messenger.getMessage()
         if receivedMessage:
             dictMessage = json.loads(receivedMessage)
-            logging.info('Received: ' + receivedMessage)
+            logging.debug('Received: ' + receivedMessage)
             payload = dictMessage['payload']
             if dictMessage['type'] == 'getState':
                 sendState(payload['todo'])

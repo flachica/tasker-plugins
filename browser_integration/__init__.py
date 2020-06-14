@@ -1,0 +1,1 @@
+from .browser_indicator import BrowserIntegration
