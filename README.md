@@ -29,4 +29,8 @@ New Menu Item for show where you spend your time
 
 ## browser_integration
 
-WIP: Track your task with [this](https://github.com/flachica/tasker-browser-extensions) browser extension 
+WIP: Track your task with [this](https://github.com/flachica/tasker-browser-extensions) browser extension
+
+## export_history
+
+Export the history to csv file. Additional, you can clean all the history
