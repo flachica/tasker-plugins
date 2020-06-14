@@ -28,7 +28,7 @@ class TrackingHistoryGraph(IndicatorSpec):
         history_item = Gtk.MenuItem.new_with_label('History track graph')
         history_item.connect('activate', self.show_graph)
 
-        return [history_item]
+        return history_item
 
     def show_graph(self, widget):
         widget.set_sensitive(False)
