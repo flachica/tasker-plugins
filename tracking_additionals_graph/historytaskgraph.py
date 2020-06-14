@@ -37,7 +37,8 @@ class HistoryTaskGraph(BaseGraph):
         preferences = configuration.get('preferences')
         self.todo_histoy = Path(
             os.path.expanduser(preferences['todo-file'])).parent.as_posix() + os.sep + 'todo.history.txt'
-        BaseGraph.__init__(self, title)
+        BaseGraph.__init__(self, title, '')
+        self.subtitle = ''
 
     def get_plaindata(self, ):
         return todotxtio.from_file(self.todo_histoy)

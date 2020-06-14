@@ -6,7 +6,7 @@ indicatorimpl = pluggy.HookimplMarker("indicator")
 
 # Custom featured needed
 import gi
-from src.hooks import IndicatorSpec
+from hooks import IndicatorSpec
 
 try:
     gi.require_version('Gtk', '3.0')
@@ -33,7 +33,7 @@ class TrackingHistoryGraph(IndicatorSpec):
     def show_graph(self, widget):
         widget.set_sensitive(False)
 
-        title = _('Timetracking tasker')
+        title = 'Timetracking tasker'
 
         graph = HistoryTaskGraph(title)
         graph.run()
