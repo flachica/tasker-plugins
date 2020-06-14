@@ -83,8 +83,10 @@ try:
         if not todo:
             creation_date = datetime.datetime.now().strftime('%Y-%m-%d')
             newTodo = todotxtio.Todo(text=payload['todo'], creation_date=creation_date)
-            newTodo.projects = [formatTodo(payload['project']), ]
-            newTodo.contexts = [formatTodo(payload['context']), ]
+            if payload.get('project'):
+                newTodo.projects = [formatTodo(payload['project']), ]
+            if payload.get('context'):
+                newTodo.contexts = [formatTodo(payload['context']), ]
             if desc:
                 newTodo.tags['description'] = desc
             newTodo.tags = getTagsAfterChangeState(newTodo)
