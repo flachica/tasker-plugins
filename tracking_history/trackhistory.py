@@ -1,10 +1,12 @@
-import pluggy
-# Custom featured needed
-from src.hooks import ListBoxRowTodoSpec
-from configurator import Configuration
-from pathlib import Path
 import os
+from pathlib import Path
+
+import pluggy
 import todotxtio.todotxtio as todotxtio
+from configurator import Configuration
+
+# Custom featured needed
+from hooks import ListBoxRowTodoSpec
 
 # Decorator for hook. The function that was decorated with this
 # will be called from de master source if it in Hookspecks availables
@@ -17,15 +19,22 @@ class TrackingHistory(ListBoxRowTodoSpec):
 
     def __init__(self):
         configuration = Configuration()
-        preferences = configuration.get('preferences')
-        self.todo_histoy = Path(
-            os.path.expanduser(preferences['todo-file'])).parent.as_posix() + os.sep + 'todo.history.txt'
+        preferences = configuration.get("preferences")
+        self.todo_histoy = (
+            Path(
+                os.path.expanduser(preferences["todo-file"])
+            ).parent.as_posix()
+            + os.sep
+            + "todo.history.txt"
+        )
         todo_histoy_path = Path(self.todo_histoy)
         if not todo_histoy_path.exists():
             todo_histoy_path.touch()
 
     @list_box_todospec
-    def after_track_time(self, todo, before_started_at, after_started_at, total_time, just_now):
+    def after_track_time(
+        self, todo, before_started_at, after_started_at, total_time, just_now
+    ):
         """
         This event is fired after user click on one task or close the app with a task started
         Take on account that this event is fired per task and one click may fire this event two times:
@@ -47,12 +56,21 @@ class TrackingHistory(ListBoxRowTodoSpec):
             new_todo_history.projects = todo.projects
             new_todo_history.contexts = todo.contexts
             new_todo_history.completed = True
-            new_todo_history.tags['started'] = str(before_started_at)
-            new_todo_history.tags['ended'] = str(just_now)
-            new_todo_history.tags['step_time'] = str(just_now - before_started_at)
-            new_todo_history.tags['total_time'] = str(todo.tags['total_time'])
+            new_todo_history.tags["started"] = str(before_started_at)
+            new_todo_history.tags["ended"] = str(just_now)
+            new_todo_history.tags["step_time"] = str(
+                just_now - before_started_at
+            )
+            new_todo_history.tags["total_time"] = str(todo.tags["total_time"])
             list_of_todos.append(new_todo_history)
             todotxtio.to_file(self.todo_histoy, list_of_todos)
 
-        print('todo: {}, before_started_at: {}, after_started_at: {}, total_time: {}, just_now: {}'.\
-              format(todo.text, before_started_at, after_started_at, total_time, just_now))
+        print(
+            "todo: {}, before_started_at: {}, after_started_at: {}, total_time: {}, just_now: {}".format(
+                todo.text,
+                before_started_at,
+                after_started_at,
+                total_time,
+                just_now,
+            )
+        )

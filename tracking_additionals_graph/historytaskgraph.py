@@ -23,30 +23,36 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from basegraph import BaseGraph
-from src.configurator import Configuration
-from pathlib import Path
-import os
-import todotxtio.todotxtio as todotxtio
 import datetime
+import os
+from pathlib import Path
+
+import todotxtio.todotxtio as todotxtio
+from basegraph import BaseGraph
+from configurator import Configuration
 
 
 class HistoryTaskGraph(BaseGraph):
-    def __init__(self, title=''):
+    def __init__(self, title=""):
         configuration = Configuration()
-        preferences = configuration.get('preferences')
-        self.todo_histoy = Path(
-            os.path.expanduser(preferences['todo-file'])).parent.as_posix() + os.sep + 'todo.history.txt'
-        BaseGraph.__init__(self, title, '')
-        self.subtitle = ''
+        preferences = configuration.get("preferences")
+        self.todo_histoy = (
+            Path(
+                os.path.expanduser(preferences["todo-file"])
+            ).parent.as_posix()
+            + os.sep
+            + "todo.history.txt"
+        )
+        BaseGraph.__init__(self, title, "")
+        self.subtitle = ""
 
-    def get_plaindata(self, ):
+    def get_plaindata(self,):
         return todotxtio.from_file(self.todo_histoy)
 
     def get_keys(self, list_of_todos):
         days = []
         for todo in list_of_todos:
-            day = self.timestam2datestr(todo.tags['started'])
+            day = self.timestam2datestr(todo.tags["started"])
             if day not in days:
                 days.append(day)
         days.sort()
@@ -55,36 +61,42 @@ class HistoryTaskGraph(BaseGraph):
     def get_values(self, days, list_of_todos):
         values = []
         list_of_todos.sort(
-            key=
-            lambda todo: (
-                self.timestam2datestr(todo.tags['started']),
+            key=lambda todo: (
+                self.timestam2datestr(todo.tags["started"]),
                 sorted(todo.projects),
-                todo.text
+                todo.text,
             )
         )
         i = 0
         for todo in list_of_todos:
             data = []
             for day in days:
-                if day == self.timestam2datestr(todo.tags['started']):
-                    data.append(float(todo.tags.get('step_time', '0')) / 3600.0)
+                if day == self.timestam2datestr(todo.tags["started"]):
+                    data.append(
+                        float(todo.tags.get("step_time", "0")) / 3600.0
+                    )
                 else:
                     data.append(0)
-            previous_data = list(filter(lambda item: item['name'] == todo.text, values))
+            previous_data = list(
+                filter(lambda item: item["name"] == todo.text, values)
+            )
             if previous_data:
                 j = 0
-                for item in previous_data[0]['data']:
+                for item in previous_data[0]["data"]:
                     data[j] += item
                     j += 1
-                values[previous_data[0]['index']]['data'] = data
+                values[previous_data[0]["index"]]["data"] = data
             else:
-                values.append({'index': i, 'name': todo.text, 'data': data})
+                values.append({"index": i, "name": todo.text, "data": data})
                 i += 1
         return values
 
     def timestam2datestr(self, timestamp):
-        return datetime.date.fromtimestamp(float(timestamp)).strftime('%Y-%m-%d')
+        return datetime.date.fromtimestamp(float(timestamp)).strftime(
+            "%Y-%m-%d"
+        )
 
-if __name__ == '__main__':
-    graph = HistoryTaskGraph('Testing graph')
+
+if __name__ == "__main__":
+    graph = HistoryTaskGraph("Testing graph")
     graph.run()

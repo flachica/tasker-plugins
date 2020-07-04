@@ -1,18 +1,21 @@
 import pluggy
 
+# Custom featured needed
+from hooks import ListBoxRowTodoSpec
+
 # Decorator for hook. The function that was decorated with this
 # will be called from de master source if it in Hookspecks availables
 list_box_todospec = pluggy.HookimplMarker("list_box_todo")
 
-# Custom featured needed
-from src.hooks import ListBoxRowTodoSpec
 
 class ListBoxRowTodoPlugin1(ListBoxRowTodoSpec):
     """A hook implementation namespace.
     """
 
     @list_box_todospec
-    def after_track_time(self, todo, before_started_at, after_started_at, total_time, just_now):
+    def after_track_time(
+        self, todo, before_started_at, after_started_at, total_time, just_now
+    ):
         """
         This event is fired after user click on one task or close the app with a task started
         Take on account that this event is fired per task and one click may fire this event two times:
@@ -30,5 +33,12 @@ class ListBoxRowTodoPlugin1(ListBoxRowTodoSpec):
         * total_time: Acumulated time in todo
         * just_now: Unix time. Only one time instance accross call's
         """
-        print('todo: {}, before_started_at: {}, after_started_at: {}, total_time: {}, just_now: {}'.\
-              format(todo.text, before_started_at, after_started_at, total_time, just_now))
+        print(
+            "todo: {}, before_started_at: {}, after_started_at: {}, total_time: {}, just_now: {}".format(
+                todo.text,
+                before_started_at,
+                after_started_at,
+                total_time,
+                just_now,
+            )
+        )
