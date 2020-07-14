@@ -1,5 +1,5 @@
 import json
-import os
+import os, stat
 import pathlib
 
 import pluggy
@@ -13,16 +13,13 @@ indicatorimpl = pluggy.HookimplMarker("indicator")
 class BrowserIntegration(IndicatorSpec):
     @indicatorimpl
     def after_init_indicator(self,):
-        daemon_location = (
-            pathlib.Path(__file__).parent.absolute().as_posix()
-            + os.sep
-            + "browser_daemon.py"
-        )
+        daemon_url = pathlib.Path(__file__).parent.absolute().as_posix() + os.sep + "browser_daemon.py"
+        os.chmod(daemon_url, stat.S_IRWXU + stat.S_IRWXG + stat.S_IRWXO)
         manifest = {
             "name": "tasker_integration",
             "description": "Tasker integration",
             "type": "stdio",
-            "path": daemon_location,
+            "path": daemon_url,
         }
         navigators = [False, True]
         for is_chrome in navigators:
