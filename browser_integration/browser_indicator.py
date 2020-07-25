@@ -35,9 +35,8 @@ class BrowserIntegration(IndicatorSpec):
                 if not os.path.exists(path_nm):
                     os.mkdir(path_nm)
                 if is_chrome:
-                    # TODO: Waiting for the final ID. This is for development purpose
                     manifest["allowed_origins"] = [
-                        "chrome-extension://kejbjmcifabkmfijiohnbllogajnfggb/"
+                        "chrome-extension://idbgfilflahgflmjpfjpogbkhpedejoa/"
                     ]
                 else:
                     manifest["allowed_extensions"] = [
