@@ -13,7 +13,7 @@ try:
     import json
     from config_browser_integration import Configurator
     from messenger import Messenger
-    import todotxtio
+    from todotxtio import todotxtio
     import time
     import datetime
     import re
